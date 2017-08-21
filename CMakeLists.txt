@@ -40,9 +40,7 @@ else()
   message(STATUS "  using yaml-cpp from ${YAML_CPP_LIBRARIES}")
 endif()
 
-find_package(Qt4 REQUIRED QtCore QtGui)
-include(${QT_USE_FILE})
-
+find_package(Qt5Widgets REQUIRED)
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -87,7 +85,10 @@ CATKIN_DEPENDS message_runtime std_msgs roah_devices rockin_benchmarking # roscp
 ###########
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${Qt5Widgets_INCLUDE_DIRS}
 )
+
+SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(DISAMBIGUATION ROAH_RSBB_)
 add_subdirectory(comm/gen/roah_rsbb_msgs/)
@@ -103,11 +104,7 @@ include_directories(
 
 add_executable(core src/core.cpp)
 add_dependencies(core roah_rsbb_generate_messages_cpp)
-target_link_libraries(core ${DISAMBIGUATION}roah_rsbb_msgs ${DISAMBIGUATION}protobuf_comm ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
-
-add_executable(public src/public.cpp)
-add_dependencies(public roah_rsbb_generate_messages_cpp)
-target_link_libraries(public rqt_roah_rsbb ${catkin_LIBRARIES})
+target_link_libraries(core ${DISAMBIGUATION}roah_rsbb_msgs ${DISAMBIGUATION}protobuf_comm ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${Qt5Widgets_LIBRARIES})
 
 add_executable(shutdown_service src/shutdown_service.cpp)
 target_link_libraries(shutdown_service ${catkin_LIBRARIES})
@@ -117,10 +114,14 @@ add_dependencies(sounds roah_rsbb_generate_messages_cpp)
 target_link_libraries(sounds ${catkin_LIBRARIES})
 
 file(GLOB RQT_LIB_SOURCES ${PROJECT_SOURCE_DIR}/src/rqt_roah_rsbb/*.cpp)
+
 add_library(rqt_roah_rsbb ${RQT_LIB_SOURCES})
 add_dependencies(rqt_roah_rsbb roah_rsbb_generate_messages_cpp)
-target_link_libraries(rqt_roah_rsbb roah_rsbb_qt ${QT_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(rqt_roah_rsbb roah_rsbb_qt ${catkin_LIBRARIES} ${Qt5Widgets_LIBRARIES})
 
+add_executable(public src/public.cpp)
+add_dependencies(public roah_rsbb_generate_messages_cpp)
+target_link_libraries(public rqt_roah_rsbb ${catkin_LIBRARIES})
 
 #############
 ## Install ##

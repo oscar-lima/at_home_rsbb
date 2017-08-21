@@ -49,7 +49,7 @@ namespace rqt_roah_rsbb
     // extend the widget with all attributes and children from UI file
     ui_.setupUi (widget_);
 
-    ui_.table->horizontalHeader()->setResizeMode (QHeaderView::Stretch);
+    ui_.table->horizontalHeader()->setSectionResizeMode (QHeaderView::Stretch);
 
     // add widget to the user interface
     context.addWidget (widget_);
